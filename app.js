@@ -1,6 +1,7 @@
 const express = require('express');
 const dotenv = require('dotenv');
 dotenv.config();
+const { connect_db } = require('./config/sequelize.config');
 
 async function main () {
   const app = express();
@@ -8,6 +9,9 @@ async function main () {
 
   app.use(express.json())
   app.use(express.urlencoded({ extended: true }))
+
+  // DB Conection
+  connect_db()
 
   // Error Handling
   app.use((req, res, next) => {
