@@ -2,6 +2,7 @@ const express = require('express');
 const dotenv = require('dotenv');
 dotenv.config();
 const sequelize = require('./config/sequelize.config');
+const initDatabase = require('./config/models.initial');
 
 async function main () {
   const app = express();
@@ -11,8 +12,7 @@ async function main () {
   app.use(express.urlencoded({ extended: true }))
 
   // DB Conection
-  require('./modules/product/product.model');
-  await sequelize.sync({force: true})
+  await initDatabase()
 
   // Error Handling
   app.use((req, res, next) => {
