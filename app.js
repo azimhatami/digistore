@@ -3,6 +3,7 @@ const dotenv = require('dotenv');
 dotenv.config();
 const sequelize = require('./config/sequelize.config');
 const initDatabase = require('./config/models.initial');
+const { productRoutes } = require('./modules/product/product.route');
 
 async function main () {
   const app = express();
@@ -14,6 +15,9 @@ async function main () {
   // DB Conection
   await initDatabase()
 
+  // Routes
+  app.use('/product', productRoutes)
+
   // Error Handling
   app.use((req, res, next) => {
     return res.status(404).json({
@@ -22,10 +26,17 @@ async function main () {
   })
 
   app.use((error, req, res, next) => {
-    const status = error?.status ?? 500;
-    const message = error?.message ?? "Internal server error";
+    const status = error?.status ?? error?.statusCode ?? 500;
+    let message = error?.message ?? "Internal server error";
+    
+    if (error?.name === 'ValidationError') {
+      const { details } = error;
+      message = details?.body?.[0].message ?? "Internal server error";
+    }
+
     return res.status(status).json({
       message: message,
+      statusCode: status
     });
   })
 

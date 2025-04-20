@@ -16,7 +16,7 @@ async function initDatabase() {
   Product.hasMany(ProductSize, {foreignKey: 'productId', sourceKey: 'id', as: 'sizes'})
   ProductSize.belongsTo(Product, {foreignKey: 'productId', targetKey: 'id'})
 
-  await sequelize.sync({force: true})
+  // await sequelize.sync({force: true})
 }
 
 
