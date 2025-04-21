@@ -124,8 +124,24 @@ async function getProductByIdController (req, res, next) {
   }
 }
 
+async function removeProductByIdController(req, res, next) {
+  try {
+    const { id } = req.params;
+    const product = await Product.findByPk(id);
+    if (!product) throw createError(404, 'Product not found');
+    await product.destroy();
+
+    return res.json({
+      message: 'Deleted product successfully',
+    });
+  } catch (error) {
+    next(error);
+  }
+}
+
 module.exports = {
   createProductController,
   getProductsController,
   getProductByIdController,
+  removeProductByIdController
 }
