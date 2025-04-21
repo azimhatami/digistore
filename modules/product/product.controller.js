@@ -1,5 +1,5 @@
-const { Poroduct, ProductDetail, ProductColor, ProductSize } = require('./product.model');
-const { PoroductTypes } = require('../../common/constant/product.const');
+const { Product, ProductDetail, ProductColor, ProductSize } = require('./product.model');
+const { ProductTypes } = require('../../common/constant/product.const');
 const createError = require('http-errors');
 
 
@@ -46,7 +46,7 @@ async function createProductController (req, res, next) {
       }
     }
 
-    if (type === ProductTypes.Coloring) {
+    if (type === ProductTypes?.Coloring) {
       if (colors && Array.isArray(colors)) {
         let colorList = [];
         for (const item of colors) {
@@ -65,7 +65,7 @@ async function createProductController (req, res, next) {
         }
       }
     }
-    if (type === ProductTypes.Sizing) {
+    if (type === ProductTypes?.Sizing) {
       if (sizes && Array.isArray(sizes)) {
         let sizeList = [];
         for (const item of sizes) {
@@ -84,15 +84,48 @@ async function createProductController (req, res, next) {
       }
     }
 
+    return res.json({
+      message: 'Product created successfully',
+    });
+
   } catch (error) {
     next(error);
   }
+}
 
-  return res.json({
-    message: 'create product successfully',
-  });
+async function getProductsController (req, res, next) {
+  try {
+    const products = await Product.findAll({});
+    return res.json({ products });
+  } catch (error) {
+    next(error);
+  }
+}
+
+async function getProductByIdController (req, res, next) {
+  try {
+    const { id } = req.params;
+
+    const product = await Product.findOne({
+      where: { id },
+      include: [
+        {model: ProductDetail, as: 'details'},
+        {model: ProductColor, as: 'colors'},
+        {model: ProductSize, as: 'sizes'},
+      ]
+    });
+
+    if (!product) {
+      throw createError(404, 'Product not found')
+    }
+    return res.json({ product });
+  } catch (error) {
+    next(error);
+  }
 }
 
 module.exports = {
   createProductController,
+  getProductsController,
+  getProductByIdController,
 }

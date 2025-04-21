@@ -17,6 +17,7 @@ async function initDatabase() {
   ProductSize.belongsTo(Product, {foreignKey: 'productId', targetKey: 'id'})
 
   // await sequelize.sync({force: true})
+  await sequelize.sync({alter: true})
 }
 
 
