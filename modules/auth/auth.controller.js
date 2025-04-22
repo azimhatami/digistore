@@ -1,4 +1,5 @@
 const { User, Otp } = require('../user/user.model');
+const { RefreshToken } = require('../user/refreshToken.model');
 const { config } = require('dotenv');
 config()
 const createError = require('http-errors')
@@ -87,12 +88,24 @@ async function checkOtpController (req, res, next) {
 
 async function verifyRefreshTokenController(req, res, next) {
   try {
-    const {refreshToken} = req.body;
-    if (!refreshToken) throw createError(401,  'Login on your account')
-    const verified = jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET);
+    const {refreshToken: token} = req.body;
+    if (!token) throw createError(401,  'Login on your account')
+    const verified = jwt.verify(token, process.env.REFRESH_TOKEN_SECRET);
     if (verified?.userId) {
       const user = await User.findByPk(verified?.userId);
       if (!user) throw createError(401, 'Login on your account');
+
+      const existToken = await RefreshToken.findOne({
+        where: {
+          token
+        }
+      });
+      if (existToken) throw createError(401, 'token expired')
+      await RefreshToken.create({
+        token,
+        userId: user.id
+      });
+
       const {accessToken, refreshToken} = generateTokens({ userId: user.id });
       return res.json({
         accessToken,
@@ -101,7 +114,7 @@ async function verifyRefreshTokenController(req, res, next) {
     }
 
   } catch (error) {
-    next(createError(401, 'Login on your account'));
+    next(error);
   }
 }
 
