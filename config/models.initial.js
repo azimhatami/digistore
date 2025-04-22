@@ -18,9 +18,9 @@ async function initDatabase() {
   Product.hasMany(ProductSize, {foreignKey: 'productId', sourceKey: 'id', as: 'sizes'})
   ProductSize.belongsTo(Product, {foreignKey: 'productId', targetKey: 'id'})
 
-  User.hasOne(Otp, {foreignKey: 'user_id', as: 'otp', sourceKey: 'id'})
-  Otp.hasOne(User, {foreignKey: 'otp_id', as: 'user', sourceKey: 'id'})
-  Otp.belongsTo(User, {foreignKey: 'user_id', targetKey: 'id'})
+  User.hasOne(Otp, {foreignKey: 'userId', as: 'otp', sourceKey: 'id'})
+  Otp.hasOne(User, {foreignKey: 'otpId', as: 'user', sourceKey: 'id'})
+  Otp.belongsTo(User, {foreignKey: 'userId', targetKey: 'id'})
 
   // await sequelize.sync({force: true})
   await sequelize.sync({alter: true})
