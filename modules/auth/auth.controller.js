@@ -1,5 +1,8 @@
 const { User, Otp } = require('../user/user.model');
+const { config } = require('dotenv');
+config()
 const createError = require('http-errors')
+const jwt = require('jsonwebtoken');
 
 
 async function sendOtpController (req, res, next) {
@@ -69,8 +72,12 @@ async function checkOtpController (req, res, next) {
       throw createError(401, 'OTP code has expired')
     }
 
+    const {accessToken, refreshToken} = generateTokens({ userId: user.id });
+
     return res.json({
       message: 'Logged in successfully',
+      accessToken,
+      refreshToken
     });
 
   } catch (error) {
@@ -78,7 +85,44 @@ async function checkOtpController (req, res, next) {
   }
 }
 
+async function verifyRefreshTokenController(req, res, next) {
+  try {
+    const {refreshToken} = req.body;
+    if (!refreshToken) throw createError(401,  'Login on your account')
+    const verified = jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET);
+    if (verified?.userId) {
+      const user = await User.findByPk(verified?.userId);
+      if (!user) throw createError(401, 'Login on your account');
+      const {accessToken, refreshToken} = generateTokens({ userId: user.id });
+      return res.json({
+        accessToken,
+        refreshToken
+      });
+    }
+
+  } catch (error) {
+    next(createError(401, 'Login on your account'));
+  }
+}
+
+function generateTokens(payload) {
+  const { ACCESS_TOKEN_SECRET, REFRESH_TOKEN_SECRET } = process.env;
+
+  const accessToken = jwt.sign(payload, ACCESS_TOKEN_SECRET, {
+    expiresIn: '7d'
+  });
+
+  const refreshToken = jwt.sign(payload, REFRESH_TOKEN_SECRET, {
+    expiresIn: '30d'
+  });
+  return {
+    accessToken,
+    refreshToken
+  };
+}
+
 module.exports = { 
   sendOtpController,
-  checkOtpController
+  checkOtpController,
+  verifyRefreshTokenController
 }
