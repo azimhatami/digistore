@@ -4,6 +4,7 @@ dotenv.config();
 const sequelize = require('./config/sequelize.config');
 const initDatabase = require('./config/models.initial');
 const { productRoutes } = require('./modules/product/product.route');
+const { authRoutes } = require('./modules/auth/auth.routes');
 
 async function main () {
   const app = express();
@@ -16,6 +17,7 @@ async function main () {
   await initDatabase()
 
   // Routes
+  app.use('/auth', authRoutes)
   app.use('/product', productRoutes)
 
   // Error Handling
