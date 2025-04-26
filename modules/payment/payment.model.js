@@ -9,7 +9,11 @@ const Payment = sequelize.define('payment', {
   refId: {type: DataTypes.STRING, allowNull: true},
   authority: {type: DataTypes.STRING, allowNull: true},
   orderId: {type: DataTypes.INTEGER, allowNull: true},
-}, {createdAt: 'created_at', updatedAt: false});
+}, {
+  createdAt: 'created_at', 
+  updatedAt: false,
+  modelName: 'payment'
+});
 
 
 module.exports = {
