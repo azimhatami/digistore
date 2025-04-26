@@ -9,6 +9,8 @@ const { User, Otp } = require('../modules/user/user.model');
 const { RefreshToken } = require('../modules/user/refreshToken.model');
 const { Basket } = require('../modules/basket/basket.model');
 const { Discount } = require('../modules/discount/discount.model');
+const { Order, OrderItems } = require('../modules/order/order.model');
+const { Payment } = require('../modules/payment/payment.model');
 
 
 async function initDatabase() {
@@ -37,9 +39,18 @@ async function initDatabase() {
   Basket.belongsTo(User, {foreignKey: 'userId', targetKey: 'id', as: 'user' })
   Basket.belongsTo(Discount, {foreignKey: 'discountId', targetKey: 'id', as: 'discount' })
 
+  Order.hasMany(OrderItems, {foreignKey: 'orderId', as: 'items', sourceKey: 'id'})
+  User.hasMany(Order, {foreignKey: 'userId', as: 'orders', sourceKey: 'id'})
+  Order.hasOne(Payment, {foreignKey: 'orderId', as: 'payment', sourceKey: 'id'})
+  Payment.hasOne(Order, {foreignKey: 'paymentId', as: 'order', sourceKey: 'id'})
+
+  OrderItems.belongsTo(Order, {foreignKey: 'orderId', targetKey: 'id'})
+
+
+
   // RefreshToken.sync()
   // await sequelize.sync({force: true})
-  // await sequelize.sync({alter: true})
+  await sequelize.sync({alter: true})
   // await Discount.sync();
   // await Basket.sync();
 }
