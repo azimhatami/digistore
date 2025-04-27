@@ -6,6 +6,7 @@ const initDatabase = require('./config/models.initial');
 const { productRoutes } = require('./modules/product/product.route');
 const { authRoutes } = require('./modules/auth/auth.routes');
 const { basketRoutes } = require('./modules/basket/basket.routes');
+const { paymentRoutes } = require('./modules/payment/payment.routes');
 
 async function main () {
   const app = express();
@@ -21,6 +22,7 @@ async function main () {
   app.use('/auth', authRoutes)
   app.use('/product', productRoutes)
   app.use('/basket', basketRoutes)
+  app.use('/payment', paymentRoutes)
 
   // Error Handling
   app.use((req, res, next) => {
