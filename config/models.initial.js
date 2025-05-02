@@ -11,6 +11,11 @@ const { Basket } = require('../modules/basket/basket.model');
 const { Discount } = require('../modules/discount/discount.model');
 const { Order, OrderItems } = require('../modules/order/order.model');
 const { Payment } = require('../modules/payment/payment.model');
+const { 
+  Role,
+  Permission,
+  RolePermission,
+} = require('../modules/RBAC/rbac.model');
 
 
 async function initDatabase() {
@@ -50,11 +55,14 @@ async function initDatabase() {
   OrderItems.belongsTo(ProductColor, {foreignKey: 'colorId', targetKey: 'id', as: 'color' })
   OrderItems.belongsTo(ProductSize, {foreignKey: 'sizeId', targetKey: 'id', as: 'size' })
 
-
+  Role.hasMany(RolePermission, {foreignKey: 'roleId', sourceKey: 'id', as: 'permissions'})
+  Permission.hasMany(RolePermission, {foreignKey: 'permissionId', sourceKey: 'id', as: 'roles'})
+  RolePermission.belongsTo(Role, {foreignKey: 'roleId', targetKey: 'id'})
+  RolePermission.belongsTo(Permission, {foreignKey: 'permissionId', targetKey: 'id'})
 
   // RefreshToken.sync()
   // await sequelize.sync({force: true})
-  await sequelize.sync({alter: true})
+  // await sequelize.sync({alter: true})
   // await Discount.sync();
   // await Basket.sync();
 }
