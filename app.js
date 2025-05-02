@@ -7,6 +7,7 @@ const { productRoutes } = require('./modules/product/product.route');
 const { authRoutes } = require('./modules/auth/auth.routes');
 const { basketRoutes } = require('./modules/basket/basket.routes');
 const { paymentRoutes } = require('./modules/payment/payment.routes');
+const { orderRoutes } = require('./modules/order/order.routes');
 
 async function main () {
   const app = express();
@@ -23,6 +24,7 @@ async function main () {
   app.use('/product', productRoutes)
   app.use('/basket', basketRoutes)
   app.use('/payment', paymentRoutes)
+  app.use('/order', orderRoutes)
 
   // Error Handling
   app.use((req, res, next) => {
