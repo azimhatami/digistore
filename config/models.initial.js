@@ -46,6 +46,9 @@ async function initDatabase() {
   Payment.hasOne(Order, {foreignKey: 'paymentId', as: 'order', sourceKey: 'id', onDelete: 'CASCADE'})
 
   OrderItems.belongsTo(Order, {foreignKey: 'orderId', targetKey: 'id'})
+  OrderItems.belongsTo(Product, {foreignKey: 'productId', targetKey: 'id', as: 'product' })
+  OrderItems.belongsTo(ProductColor, {foreignKey: 'colorId', targetKey: 'id', as: 'color' })
+  OrderItems.belongsTo(ProductSize, {foreignKey: 'sizeId', targetKey: 'id', as: 'size' })
 
 
 
