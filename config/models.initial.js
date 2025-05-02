@@ -41,8 +41,9 @@ async function initDatabase() {
 
   Order.hasMany(OrderItems, {foreignKey: 'orderId', as: 'items', sourceKey: 'id'})
   User.hasMany(Order, {foreignKey: 'userId', as: 'orders', sourceKey: 'id'})
-  Order.hasOne(Payment, {foreignKey: 'orderId', as: 'payment', sourceKey: 'id'})
-  Payment.hasOne(Order, {foreignKey: 'paymentId', as: 'order', sourceKey: 'id'})
+  User.hasMany(Payment, {foreignKey: 'userId', as: 'payments', sourceKey: 'id'})
+  Order.hasOne(Payment, {foreignKey: 'orderId', as: 'payment', sourceKey: 'id', onDelete: 'CASCADE'})
+  Payment.hasOne(Order, {foreignKey: 'paymentId', as: 'order', sourceKey: 'id', onDelete: 'CASCADE'})
 
   OrderItems.belongsTo(Order, {foreignKey: 'orderId', targetKey: 'id'})
 

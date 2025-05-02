@@ -89,6 +89,8 @@ async function getUserBasketById(userId) {
     ]
   });
 
+  if (basket.length === 0) throw createError(400, 'your basket is empty')
+
   let totalAmount = 0;
   let totalDiscount = 0;
   let finalAmount = 0;

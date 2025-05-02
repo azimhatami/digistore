@@ -8,6 +8,7 @@ const Payment = sequelize.define('payment', {
   amount: {type: DataTypes.DECIMAL},
   refId: {type: DataTypes.STRING, allowNull: true},
   authority: {type: DataTypes.STRING, allowNull: true},
+  userId: {type: DataTypes.INTEGER, allowNull: true},
   orderId: {type: DataTypes.INTEGER, allowNull: true},
 }, {
   createdAt: 'created_at', 
