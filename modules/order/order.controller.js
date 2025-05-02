@@ -52,7 +52,63 @@ async function getOneOrderByIdController(req, res, next) {
   }
 }
 
+async function setPacketedStatusToOrder(req, res, next) {
+  const {id} = req.params;
+  const order = await findByPk(id);
+  if (!order) throw createError(404, 'not found order');
+  if (order.status !== OrderStatus.InProcess) throw createError(400, 'order status should be in-process');
+  order.status = OrderStatus.Packeted;
+  await order.save();
+  return res.json({
+    message: 'set order to packeted line',
+  });
+}
+
+async function setInTransitStatusToOrder(req, res, next) {
+  const {id} = req.params;
+  const order = await findByPk(id);
+  if (!order) throw createError(404, 'not found order');
+  if (order.status !== OrderStatus.Packeted) throw createError(400, 'order status should be packeted');
+  order.status = OrderStatus.InTransit;
+  await order.save();
+  return res.json({
+    message: 'set order to in-transit line',
+  });
+}
+
+async function setCanceledStatusToOrder(req, res, next) {
+  const {id} = req.params;
+  const { reason } = req.body;
+  const order = await findByPk(id);
+  if (!order) throw createError(404, 'not found order');
+  if ([OrderStatus.Pending, OrderStatus.Delivery, OrderStatus.Canceled].includes(order.status)) 
+    throw createError(400, 'select correct order to cancel');
+  order.status = OrderStatus.Canceled;
+  order.reason = reason;
+  await order.save();
+  return res.json({
+    message: 'canceled order successfully',
+  });
+}
+
+async function setDeliveryStatusToOrder(req, res, next) {
+  const {id} = req.params;
+  const order = await findByPk(id);
+  if (!order) throw createError(404, 'not found order');
+  if (order.status !== OrderStatus.InTransit) throw createError(400, 'order status should be in-transit');
+  order.status = OrderStatus.Delivery;
+  await order.save();
+  return res.json({
+    message: 'order delivery to customer successfully',
+  });
+}
+
+
 module.exports = {
   getMyOrdersController,
-  getOneOrderByIdController
+  getOneOrderByIdController,
+  setPacketedStatusToOrder,
+  setInTransitStatusToOrder,
+  setCanceledStatusToOrder,
+  setDeliveryStatusToOrder,
 }
